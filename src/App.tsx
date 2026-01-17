@@ -1,34 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useQuery } from "./react-query/useQuery";
+
+interface Todo {
+  id: number;
+  title: string;
+  completed: boolean;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { data, status, error, isFetching, refetch } = useQuery({
+    queryKey: "todos",
+    queryFn: async () => {
+      const response = await fetch("https://jsonplaceholder.typicode.com/todos");
+      if (!response.ok) {
+        throw new Error("Failed to fetch todos");
+      }
+      return response.json() as Promise<Todo[]>;
+    },
+    staleTime: 10_000,
+    cacheTime: 60_000,
+    retry: 2,
+  })
 
+  if (status === "pending") return <div>Loading...</div>;
+  if (status === "error") return <div>Error: {(error as Error)?.message}</div>;
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <button onClick={refetch} disabled={isFetching}>
+        Refetch
+      </button>
+
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
   )
 }
 
