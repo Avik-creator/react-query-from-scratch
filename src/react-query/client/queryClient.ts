@@ -1,5 +1,5 @@
-import type { Query, QueryOptions } from "./types/query";
-import { createQuery } from "./createQuery";
+import type { Query, QueryOptions } from "../types/query";
+import { createQuery } from "../createQuery";
 
 export class QueryClient {
   private queries = new Map<string, Query<any, any>>();

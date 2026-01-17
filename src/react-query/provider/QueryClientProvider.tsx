@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { QueryClient } from "./queryClient";
+import { QueryClient } from "../client/queryClient";
 export const QueryClientContext = createContext<QueryClient | null>(null);
 
 export const QueryClientProvider = ({ children, client }: { children: React.ReactNode; client: QueryClient }) => {
